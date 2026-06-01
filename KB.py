@@ -18,7 +18,7 @@ from gpt4all import GPT4All
 load_dotenv("util/.env")
 
 #Config
-MODEL_PATH = "C:\\Users\\Prantik\\Desktop\\kb poc\\util"
+MODEL_PATH = os.getenv("MODEL_PATH")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 ATLASSIAN_DOMAIN = os.getenv("ATLASSIAN_DOMAIN")
 ATLASSIAN_EMAIL = os.getenv("ATLASSIAN_EMAIL")
@@ -171,7 +171,7 @@ def build_vectorstore():
     splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
     split_docs = splitter.split_documents(docs)
 
-    st.info(f"Indexed {jira_count} Jira docs + {conf_count} Confluence docs  →  {len(split_docs)} chunks")
+    st.info(f"Found {jira_count} Jira tickets + {conf_count} Confluence docs.")
 
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
