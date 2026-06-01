@@ -15,7 +15,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from gpt4all import GPT4All
 
-load_dotenv()
+load_dotenv("util/.env")
 
 #Config
 MODEL_PATH = "C:\\Users\\Prantik\\Desktop\\kb poc\\util"
