@@ -77,6 +77,7 @@ def fetch_jira_issues():
     }
     resp = requests.post(url, auth=_auth(), headers=headers, json=payload, timeout=30)
     resp.raise_for_status()
+    print(f"Fetched {resp.json().get('total', 0)} Jira issues")
     return resp.json().get("issues", [])
 
 
@@ -113,6 +114,7 @@ def fetch_confluence_pages():
     }
     resp = requests.get(url, auth=_auth(), params=params, timeout=30)
     resp.raise_for_status()
+    print(f"Fetched {resp.json().get('total', 0)} Confluence pages")
     return resp.json().get("results", [])
 
 
