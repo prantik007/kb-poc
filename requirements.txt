@@ -1,0 +1,12 @@
+streamlit
+requests
+python-dotenv
+langchain-text-splitters
+langchain-community
+langchain-huggingface
+langchain-core
+langchain-google-genai
+gpt4all
+sentence-transformers
+faiss-cpu
+torchvision

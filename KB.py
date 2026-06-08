@@ -24,7 +24,7 @@ ATLASSIAN_DOMAIN = os.getenv("ATLASSIAN_DOMAIN")
 ATLASSIAN_EMAIL = os.getenv("ATLASSIAN_EMAIL")
 ATLASSIAN_API_KEY = os.getenv("ATLASSIAN_API_KEY")
 
-LLM_NAME = "Qwen"
+LLM_NAME = "Phi-3"
 MAX_RESULTS = 100
 
 
@@ -32,7 +32,8 @@ MAX_RESULTS = 100
 
 #Streamlit UI
 st.set_page_config(page_title="Enterprise Knowledge Base", layout="wide")
-st.title(f"Enterprise Knowledge Base — Jira + Confluence ({LLM_NAME})")
+st.title(f"Enterprise Knowledge Base")
+st.subheader(f"Ask questions about your Jira tickets and Confluence documentation, powered by a {LLM_NAME} LLM", divider="gray", width="content")
 
 
 # --- Atlassian API Helpers ---
@@ -192,9 +193,9 @@ def load_llm():
             temperature=0,
             google_api_key=GOOGLE_API_KEY
         )
-    elif LLM_NAME == 'Qwen':
+    elif LLM_NAME == 'Phi-3':
         return GPT4All(
-                "Qwen2.5-7B-Instruct-Q4_K_M.gguf",
+                "Phi-3-mini-4k-instruct-q4.gguf",
                 model_path=MODEL_PATH
             )
     raise Exception('Model not supported.')
@@ -211,15 +212,15 @@ SYSTEM_INSTRUCTION = (
 )
 
 def build_prompt(context, question):
-    if LLM_NAME.upper() == "QWEN":
+    if LLM_NAME == "Phi-3":
         return f"""<|system|>
-{SYSTEM_INSTRUCTION}</s>
+{SYSTEM_INSTRUCTION}<|end|>
 <|user|>
 Context:
 {context}
 
 Question:
-{question}</s>
+{question}<|end|>
 <|assistant|>
 """
     elif LLM_NAME.lower() == "gemini":
@@ -234,7 +235,12 @@ def generate_answer(prompt):
     if isinstance(llm, ChatGoogleGenerativeAI):
         return llm.invoke(prompt)
     elif isinstance(llm, GPT4All):
-        return llm.generate(prompt, max_tokens=300, temp=0)
+        raw = llm.generate(prompt, max_tokens=300, temp=0)
+        # Clean up: stop at the first special token the model may emit
+        for token in ("<|end|>", "<|assistant|>", "<|user|>"):
+            if token in raw:
+                raw = raw.split(token, 1)[0]
+        return raw.strip()
     return None
 
 #Main UI
